@@ -8,23 +8,31 @@ const createPostController = asyncHandler(async (req, res) => {
   const { title, content, category } = req.body;
 
   if (!title || !content || !category) {
-    throw new ApiError(400, "all fields are required");
+    res.status(401).json({
+      data: "all fields are required",
+    });
   }
   const file = req.file;
   console.log("file", file);
   if (!file) {
-    throw new ApiError(400, "No file path");
+    res.status(401).json({
+      data: "No file path",
+    });
   }
   const localfilePath = file && file.path;
   console.log("localFile", localfilePath);
 
   if (!localfilePath) {
-    throw new ApiError(400, "No local path");
+    res.status(401).json({
+      data: "No localfilepath",
+    });
   }
   const imageUrl = await uploadOnCloudinary(localfilePath);
   console.log("imageurl", imageUrl);
   if (!imageUrl) {
-    throw new ApiError(400, "No local path");
+    res.status(401).json({
+      data: "No imageurl from cloudinary",
+    });
   }
   const slug = req.body.title
     .split(" ")

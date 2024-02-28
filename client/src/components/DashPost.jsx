@@ -14,9 +14,7 @@ export default function DashPosts() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await fetch(
-          `/api/v1/post/getposts?userId=${currentUser._id}`
-        );
+        const res = await fetch(`/api/v1/post/getposts`);
         const data = await res.json();
         const posts = data.data.posts;
         if (res.ok) {
@@ -33,12 +31,13 @@ export default function DashPosts() {
       fetchPosts();
     }
   }, [currentUser._id]);
+  console.log(userPosts);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
     try {
       const res = await fetch(
-        `/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
+        `/api/v1/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
       );
       const data = await res.json();
       const posts = data.data.posts;

@@ -13,7 +13,7 @@ export default function DashboardComp() {
   const [users, setUsers] = useState([]);
   const [comments, setComments] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [overallUsers, setOverallUsers] = useState(null);
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
   const [lastMonthUsers, setLastMonthUsers] = useState(0);
@@ -26,10 +26,12 @@ export default function DashboardComp() {
         const res = await fetch("/api/v1/users/get-all-users?limit=5");
         const data = await res.json();
         const result = data.data;
+        console.log(result);
 
         if (res.ok) {
           setUsers(result.user);
-          setTotalUsers(result.totaluser);
+
+          setOverallUsers(result.totalUser);
           setLastMonthUsers(result.lastMonthUser);
         }
       } catch (error) {
@@ -44,7 +46,6 @@ export default function DashboardComp() {
         if (res.ok) {
           setPosts(data.data.posts);
           setTotalPosts(data.data.totalPosts);
-
           setLastMonthPosts(data.data.lastMonthPosts);
         }
       } catch (error) {
@@ -70,6 +71,7 @@ export default function DashboardComp() {
       fetchComments();
     }
   }, [currentUser]);
+
   return (
     <div className="p-3 md:mx-auto">
       <div className="flex-wrap flex gap-4 justify-center">
@@ -77,7 +79,9 @@ export default function DashboardComp() {
           <div className="flex justify-between">
             <div className="">
               <h3 className="text-gray-500 text-md uppercase">Total Users</h3>
-              <p className="text-2xl">{totalUsers}</p>
+              {overallUsers !== null && (
+                <p className="text-2xl">{overallUsers}</p>
+              )}
             </div>
             <HiOutlineUserGroup className="bg-teal-600  text-white rounded-full text-5xl p-3 shadow-lg" />
           </div>

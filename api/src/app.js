@@ -8,7 +8,7 @@ import commentsRouter from "./routes/comments.routes.js";
 import path from "path";
 const __dirname = path.resolve();
 const app = express();
-//
+// //
 // predefined middleware
 app.use(express.json({ limit: "16kb" }));
 app.use(morgan("tiny"));

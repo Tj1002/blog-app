@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
+import { Toaster } from "react-hot-toast";
 
 // import ThemeProvider from "./components/ThemeProvider";
 
@@ -48,9 +49,12 @@ const router = createBrowserRouter(
 
 function App() {
   return (
-    <RouterProvider router={router}>
-      <Layout />
-    </RouterProvider>
+    <>
+      <Toaster />
+      <RouterProvider router={router}>
+        <Layout />
+      </RouterProvider>
+    </>
   );
 }
 

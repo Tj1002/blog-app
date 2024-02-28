@@ -1,5 +1,13 @@
-import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
+import {
+  Alert,
+  Button,
+  FileInput,
+  Select,
+  Spinner,
+  TextInput,
+} from "flowbite-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -9,9 +17,12 @@ export default function CreatePost() {
   const navigate = useNavigate();
 
   const [uploadFile, setUploadFile] = useState(null);
-  // const [fileUrl, setFileUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [title, setTitle] = useState(null);
   const [category, setCategory] = useState(null);
+  const [fileUrl, setFileUrl] = useState(null);
 
   const [content, setContent] = useState({ content: "" });
 
@@ -32,12 +43,13 @@ export default function CreatePost() {
     const file = e.target.files[0];
     console.log(file);
     if (file) {
-      // const fileUrl = URL.createObjectURL(file);
-      // console.log(fileUrl);
-      // setFileUrl(fileUrl);
+      const fileUrl = URL.createObjectURL(file);
+      console.log(fileUrl);
+      setFileUrl(fileUrl);
       setUploadFile(file);
     }
   };
+  console.log(fileUrl);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,20 +63,33 @@ export default function CreatePost() {
       Array.from(formData.entries()).forEach((entry) => {
         console.log(entry);
       });
-      const res = await fetch("/api/v1/post/create-post", {
+      setLoading(true);
+      const response = await fetch("/api/v1/post/create-post", {
         method: "POST",
         body: formData,
       });
+      const result = await response.json();
 
-      if (!res.ok) {
-        throw new Error(`Failed to create post: ${res.status}`);
+      if (!response.ok) {
+        if (!response.ok) {
+          console.log(result.data);
+          toast.error(result.data);
+          setLoading(false);
+          return setError(result.data);
+        }
       }
 
-      const data = await res.json();
-      console.log(data.data);
-      navigate("/post/${post.slug}");
+      if (response.ok) {
+        console.log(result.data);
+        setLoading(false);
+        toast.success("post created successful ");
+        setError(null);
+        navigate(`/post/${result.data.slug}`);
+      }
     } catch (error) {
-      console.error("Error creating post:", error.message);
+      console.error("Error creating post");
+      setLoading(false);
+      setError(null);
     }
   };
 
@@ -100,7 +125,7 @@ export default function CreatePost() {
             onChange={handleFileChange}
           />
         </div>
-        {/* {fileUrl && <img src={fileUrl} alt="image" />} */}
+        {fileUrl && <img src={fileUrl} alt="image" />}
 
         <ReactQuill
           theme="snow"
@@ -113,15 +138,26 @@ export default function CreatePost() {
           }}
         />
 
-        <Button type="submit" gradientDuoTone="purpleToPink">
-          Publish
+        <Button
+          outline
+          gradientDuoTone="pinkToOrange"
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? (
+            <Spinner>
+              <span>loading...</span>
+            </Spinner>
+          ) : (
+            "Publish"
+          )}
         </Button>
 
-        {/* {publishError && (
+        {error && (
           <Alert className="mt-5" color="failure">
-            {publishError}
+            {error}
           </Alert>
-        )} */}
+        )}
       </form>
     </div>
   );

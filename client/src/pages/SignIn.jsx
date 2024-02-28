@@ -6,14 +6,17 @@ import {
   signInSuccess,
   signInFailure,
 } from "../redux/user/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import OAuth from "../components/OAuth";
+
+import toast from "react-hot-toast";
 
 function SignIn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const { loading, error: errorMessage } = useSelector((state) => state.user);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   function handleChange(e) {
     e.preventDefault();
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -21,28 +24,33 @@ function SignIn() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      return dispatch(signInFailure("Please fill all the field"));
+      dispatch(signInFailure("Please fill all the field"));
+      return setError("Please fill all the field");
     }
     try {
       dispatch(signInStart());
-      const res = await fetch("/api/v1/users/sign-in", {
+      const response = await fetch("/api/v1/users/sign-in", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (data.success === false) {
-        console.log(data.data.message);
-        return dispatch(signInFailure(data.message));
+      const result = await response.json();
+      if (!response.ok) {
+        console.log(result.data);
+        toast.error(result.data);
+        setLoading(false);
+        return setError(result.data);
       }
-      console.log(data.data);
-      if (data.success === true) {
-        console.log(data.data.user);
-        dispatch(signInSuccess(data.data.user));
+      if (response.ok) {
+        toast.success("Login successful");
+        console.log(result.data.user);
+        dispatch(signInSuccess(result.data.user));
         navigate("/");
       }
     } catch (error) {
-      dispatch(signInFailure(error.message));
+      setError(error.message);
+      setLoading(false);
+      toast.error("Login failure");
     }
   }
   return (
@@ -94,6 +102,7 @@ function SignIn() {
                 "Sign In"
               )}
             </Button>
+
             <OAuth />
           </form>
           <div className="flex gap-2 mt-5 text-sm">
@@ -102,9 +111,9 @@ function SignIn() {
               Sign Up
             </Link>
           </div>
-          {errorMessage && (
+          {error && (
             <Alert className="mt-5" color="failure">
-              {errorMessage}
+              {error}
             </Alert>
           )}
         </div>
