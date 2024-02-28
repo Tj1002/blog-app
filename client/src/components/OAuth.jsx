@@ -9,15 +9,19 @@ import {
   signInSuccess,
 } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { response } from "express";
 function OAuth() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth = getAuth(app);
-  const { loading } = useSelector((state) => state.user);
   const handleGoogleClick = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
     try {
+      setLoading(true);
       dispatch(signInStart());
       const resultFromGoogle = await signInWithPopup(auth, provider);
       const res = await fetch("/api/v1/users/google", {
@@ -32,17 +36,24 @@ function OAuth() {
         }),
       });
       const data = await res.json();
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+      if (!response.ok) {
+        dispatch(signInFailure(response));
+        toast.error("Error in authentication");
+        setLoading(false);
+        return setError(response);
       }
       if (data.success === true) {
         console.log(data.data);
         dispatch(signInSuccess(data.data));
+        toast.success("Login successful");
         navigate("/");
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      setError("something went wrong");
       dispatch(signInFailure(error.message));
+      toast.error("something went wrong");
     }
   };
   return (
