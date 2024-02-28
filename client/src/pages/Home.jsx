@@ -1,28 +1,26 @@
 import { Link } from "react-router-dom";
 
 import { useEffect, useState } from "react";
-import PostCard from "../components/PostCard"
+import PostCard from "../components/PostCard";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
-useEffect(()=>{
-   const fetchPosts = async () => {
-     try {
-       const res = await fetch("/api/v1/post/getPosts");
-       if (!res.ok) {
-         throw new Error("Failed to fetch posts");
-       }
-       const data = await res.json();
-       console.log(data);
-       setPosts(data.data.posts);
-     } catch (error) {
-       console.error("Error fetching posts:", error);
-     }
-   };
-   fetchPosts()
-
-},[])
- 
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch("/api/v1/post/getPosts");
+        if (!res.ok) {
+          throw new Error("Failed to fetch posts");
+        }
+        const data = await res.json();
+        console.log(data);
+        setPosts(data.data.posts);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <div>
@@ -39,7 +37,6 @@ useEffect(()=>{
           View all posts
         </Link>
       </div>
-      
 
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7">
         {posts && posts.length > 0 && (
@@ -51,7 +48,7 @@ useEffect(()=>{
               ))}
             </div>
             <Link
-              to={"/search"}
+              to="/search"
               className="text-lg text-teal-500 hover:underline text-center"
             >
               View all posts

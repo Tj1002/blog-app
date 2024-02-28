@@ -32,6 +32,7 @@ function CommentsSection({ postId }) {
         }),
       });
       const data = await res.json();
+      console.log(data);
 
       if (res.ok) {
         setComment("");
@@ -42,6 +43,7 @@ function CommentsSection({ postId }) {
       setCommentError(error.message);
     }
   };
+  console.log(comments);
   useEffect(() => {
     const getComments = async () => {
       try {
@@ -59,6 +61,7 @@ function CommentsSection({ postId }) {
     };
     getComments();
   }, [postId]);
+  console.log(comment);
   const handleLike = async (commentId) => {
     try {
       if (!currentUser) {
@@ -71,7 +74,7 @@ function CommentsSection({ postId }) {
       if (res.ok) {
         const data = await res.json();
         setComments(
-          comments.map((comment) =>
+          comments?.map((comment) =>
             comment._id === commentId
               ? {
                   ...comment,
@@ -89,7 +92,7 @@ function CommentsSection({ postId }) {
 
   const handleEdit = async (comment, editedContent) => {
     setComments(
-      comments.map((c) =>
+      comments?.map((c) =>
         c._id === comment._id ? { ...c, content: editedContent } : c
       )
     );
@@ -107,7 +110,7 @@ function CommentsSection({ postId }) {
       });
       if (res.ok) {
         const data = await res.json();
-        setComments(comments.filter((comment) => comment._id !== commentId));
+        setComments(comments?.filter((comment) => comment._id !== commentId));
       }
     } catch (error) {
       console.log(error.message);
@@ -165,17 +168,19 @@ function CommentsSection({ postId }) {
           )}
         </form>
       )}
-      {comments.length === 0 ? (
+      {console.log(comments)}
+      {comments?.length === 0 ? (
         <p className="text-sm my-5">No comments yet!</p>
       ) : (
         <>
           <div className="text-sm my-5 flex items-center gap-1">
             <p>Comments</p>
             <div className="border border-gray-400 py-1 px-2 rounded-sm">
-              <p>{comments.length}</p>
+              <p>{comments?.length}</p>
             </div>
           </div>
-          {comments.map((comment) => (
+          {console.log(comments)}
+          {comments?.map((comment) => (
             <Comments
               key={comment._id}
               comment={comment}

@@ -14,6 +14,7 @@ function PostPage() {
   const [postIdToDelete, setPostIdToDelete] = useState(null);
 
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
 
   const handleDeletePost = async () => {
     setPostIdToDelete(post._id);
@@ -101,14 +102,14 @@ function PostPage() {
               </Button>
             </Link>
             <div className="flex flex-row justify-between gap-8">
-              {currentUser._id === post.userId || currentUser.isAdmin ? (
+              {currentUser?._id === post.userId || currentUser?.isAdmin ? (
                 <Link to="/" className="self-center mt-5">
                   <Button color="red" pill size="xs" onClick={handleDeletePost}>
                     delete
                   </Button>
                 </Link>
               ) : null}
-              {currentUser._id === post.userId ? (
+              {currentUser?._id === post.userId ? (
                 <Link
                   to={`/update-post/${post._id}`}
                   className="self-center mt-5"

@@ -21,6 +21,7 @@ import CreatePost from "./pages/CreatePost";
 import UpdatePost from "./pages/UpdatePost";
 import PostPage from "./pages/PostPage";
 import SearchPage from "./pages/SearchPage";
+import Projects from "./pages/Project";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,8 +36,9 @@ const router = createBrowserRouter(
       <Route element={<OnlyAdminPrivateRoute />}></Route>
 
       <Route path="/sign-in" element={<SignIn />} />
+      <Route path="/projects" element={<Projects />} />
       <Route path="/sign-up" element={<SignUp />} />
-      <Route path="'/search" element={<SearchPage />} />
+      <Route path="/search" element={<SearchPage />} />
       <Route path="/post/:postSlug" element={<PostPage />} />
 
       <Route path="*" element={<PageNotFound />} />
