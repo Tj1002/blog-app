@@ -1,13 +1,14 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
-import  { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import toast from "react-hot-toast";
 
 function SignUp() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   function handleChange(e) {
     e.preventDefault();
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -15,29 +16,34 @@ function SignUp() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage("Please fill all the field");
+      return setError("Please fill all the field");
     }
     try {
       setLoading(true);
-      setErrorMessage(null);
-      const res = await fetch("/api/v1/users/sign-up", {
+      setError(null);
+      const response = await fetch("/api/v1/users/sign-up", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (data.success === false) {
-        console.log(data.data.message);
-        return setErrorMessage(data.data.message);
+      const result = await response.json();
+      if (!response.ok) {
+        console.log(result.data);
+        toast.error("singnup error");
+        setLoading(false);
+        return setError(result.data);
       }
-      console.log(data.data);
-      if (data.success === true) {
+      if (response.ok) {
+        setLoading(false);
+        toast.success("Login successful");
+        console.log(result.data.user);
         navigate("/sign-in");
       }
 
       setLoading(false);
     } catch (error) {
-      setErrorMessage(error.message);
+      setError(error.message);
+      toast.error("something went wrong");
       setLoading(false);
     }
   }
@@ -99,7 +105,7 @@ function SignUp() {
                 "Sign Up"
               )}
             </Button>
-            <OAuth/>
+            <OAuth />
           </form>
           <div className="flex gap-2 mt-5 text-sm">
             <span>Have an Account ?</span>
@@ -107,9 +113,9 @@ function SignUp() {
               Sign in
             </Link>
           </div>
-          {errorMessage && (
+          {error && (
             <Alert className="mt-5" color="failure">
-              {errorMessage}
+              {error}
             </Alert>
           )}
         </div>
