@@ -10,7 +10,7 @@ import {
 } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { response } from "express";
+
 function OAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -24,7 +24,7 @@ function OAuth() {
       setLoading(true);
       dispatch(signInStart());
       const resultFromGoogle = await signInWithPopup(auth, provider);
-      const res = await fetch("/api/v1/users/google", {
+      const response = await fetch("/api/v1/users/google", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +35,7 @@ function OAuth() {
           googlePhotoUrl: resultFromGoogle.user.photoURL,
         }),
       });
-      const data = await res.json();
+      const data = await response.json();
       if (!response.ok) {
         dispatch(signInFailure(response));
         toast.error("Error in authentication");
